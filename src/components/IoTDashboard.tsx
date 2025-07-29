@@ -6,11 +6,12 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { useToast } from '@/hooks/use-toast';
-import { Settings, Send, Activity, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Settings, Send } from 'lucide-react';
+import { AppSidebar } from './AppSidebar';
+import { DeviceFeedbackPanel } from './DeviceFeedbackPanel';
 
 interface MessageField {
   name: string;
@@ -31,14 +32,14 @@ interface MessageType {
 interface FeedbackMessage {
   id: string;
   timestamp: Date;
-  type: 'success' | 'error' | 'info';
+  type: 'success' | 'error' | 'warning' | 'info';
   message: string;
   details?: string;
 }
 
 const messageTypes: MessageType[] = [
   {
-    id: 'sensor_config',
+    id: 'sensor-config',
     name: 'Sensor Configuration',
     description: 'Configure sensor parameters and sampling rates',
     fields: [
@@ -60,7 +61,7 @@ const messageTypes: MessageType[] = [
     ]
   },
   {
-    id: 'power_management',
+    id: 'power',
     name: 'Power Management',
     description: 'Configure power saving and battery settings',
     fields: [
@@ -274,137 +275,96 @@ const IoTDashboard: React.FC = () => {
     }
   };
 
-  const getFeedbackIcon = (type: 'success' | 'error' | 'info') => {
-    switch (type) {
-      case 'success': return <CheckCircle className="w-4 h-4 text-success" />;
-      case 'error': return <XCircle className="w-4 h-4 text-destructive" />;
-      case 'info': return <Clock className="w-4 h-4 text-info" />;
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Settings className="w-8 h-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">IoT Device Configuration</h1>
-              <p className="text-muted-foreground">Configure and manage your IoT device settings</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Activity className={`w-5 h-5 ${isConnected ? 'text-success' : 'text-destructive'}`} />
-            <Badge variant={isConnected ? 'default' : 'destructive'}>
-              {isConnected ? 'Connected' : 'Disconnected'}
-            </Badge>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Message Type Selection */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle>Message Types</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {messageTypes.map(messageType => (
-                <Button
-                  key={messageType.id}
-                  variant={selectedMessageType === messageType.id ? 'default' : 'outline'}
-                  className="w-full justify-start text-left h-auto p-4"
-                  onClick={() => setSelectedMessageType(messageType.id)}
-                >
-                  <div>
-                    <div className="font-medium">{messageType.name}</div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {messageType.description}
-                    </div>
-                  </div>
-                </Button>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Configuration Form */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle>
-                {currentMessageType ? currentMessageType.name : 'Select Message Type'}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {currentMessageType ? (
-                <>
-                  {currentMessageType.fields.map(field => (
-                    <div key={field.name} className="space-y-2">
-                      <Label className="text-sm font-medium">
-                        {field.label}
-                        {field.required && <span className="text-destructive ml-1">*</span>}
-                      </Label>
-                      {renderField(field)}
-                    </div>
-                  ))}
-                  
-                  <Separator className="my-6" />
-                  
-                  <Button 
-                    onClick={handleSendMessage}
-                    className="w-full"
-                    disabled={!isConnected}
-                  >
-                    <Send className="w-4 h-4 mr-2" />
-                    Send Configuration
-                  </Button>
-                </>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  Please select a message type to configure
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar 
+          messageTypes={messageTypes}
+          selectedMessageType={selectedMessageType}
+          onMessageTypeSelect={setSelectedMessageType}
+          connectionStatus={isConnected}
+        />
+        
+        <div className="flex-1 flex flex-col">
+          {/* Header */}
+          <header className="h-16 border-b border-border bg-gradient-to-r from-background to-card/50 backdrop-blur-sm">
+            <div className="flex items-center justify-between h-full px-6">
+              <div className="flex items-center gap-3">
+                <SidebarTrigger />
+                <Settings className="w-6 h-6 text-primary" />
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">IoT Device Configuration</h1>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+            </div>
+          </header>
 
-          {/* Feedback Display */}
-          <Card className="lg:col-span-1">
-            <CardHeader>
-              <CardTitle>Device Feedback</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-96">
-                {feedbackMessages.length > 0 ? (
-                  <div className="space-y-3">
-                    {feedbackMessages.map(feedback => (
-                      <div key={feedback.id} className="p-3 border rounded-lg">
-                        <div className="flex items-start gap-3">
-                          {getFeedbackIcon(feedback.type)}
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium">{feedback.message}</div>
-                            {feedback.details && (
-                              <div className="text-xs text-muted-foreground mt-1">
-                                {feedback.details}
-                              </div>
-                            )}
-                            <div className="text-xs text-muted-foreground mt-2">
-                              {feedback.timestamp.toLocaleTimeString()}
-                            </div>
+          <div className="flex-1 flex">
+            {/* Main Configuration Area */}
+            <main className="flex-1 p-6">
+              <div className="max-w-2xl mx-auto">
+                {currentMessageType ? (
+                  <Card className="shadow-card">
+                    <CardHeader className="pb-6">
+                      <CardTitle className="text-2xl text-center">
+                        {currentMessageType.name}
+                      </CardTitle>
+                      <p className="text-muted-foreground text-center">
+                        {currentMessageType.description}
+                      </p>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {currentMessageType.fields.map(field => (
+                        <div key={field.name} className="space-y-3">
+                          <Label className="text-sm font-semibold text-foreground">
+                            {field.label}
+                            {field.required && <span className="text-destructive ml-1">*</span>}
+                          </Label>
+                          <div className="bg-card/50 p-3 rounded-md border border-border">
+                            {renderField(field)}
                           </div>
                         </div>
+                      ))}
+                      
+                      <Separator className="my-8" />
+                      
+                      <div className="flex justify-center">
+                        <Button 
+                          onClick={handleSendMessage}
+                          className="px-8 py-3 text-base font-medium shadow-glow"
+                          disabled={!isConnected}
+                          size="lg"
+                        >
+                          <Send className="w-5 h-5 mr-2" />
+                          Send Configuration
+                        </Button>
                       </div>
-                    ))}
-                  </div>
+                    </CardContent>
+                  </Card>
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    No feedback messages yet. Send a configuration to see device responses.
-                  </div>
+                  <Card className="shadow-card">
+                    <CardContent className="py-16">
+                      <div className="text-center space-y-4">
+                        <Settings className="w-16 h-16 text-muted-foreground mx-auto opacity-50" />
+                        <h3 className="text-xl font-semibold text-foreground">
+                          Select Configuration Type
+                        </h3>
+                        <p className="text-muted-foreground max-w-md mx-auto">
+                          Choose a configuration type from the sidebar to start configuring your IoT device settings.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 )}
-              </ScrollArea>
-            </CardContent>
-          </Card>
+              </div>
+            </main>
+
+            {/* Device Feedback Panel */}
+            <DeviceFeedbackPanel feedbackMessages={feedbackMessages} />
+          </div>
         </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 };
 
