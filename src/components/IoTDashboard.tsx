@@ -225,7 +225,7 @@ const IoTDashboard: React.FC = () => {
         variant: response.type === 'error' ? 'destructive' : response.type === 'success' ? 'default' : 'default',
         title: response.type === 'success' ? 'Success' : response.type === 'error' ? 'Error' : 'Info',
         description: response.message,
-        className: response.type === 'success' ? 'border-success bg-success/10 text-success-foreground' : ''
+        className: response.type === 'success' ? 'border-success bg-success text-white' : ''
       });
 
     } catch (error) {
