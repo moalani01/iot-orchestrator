@@ -8,44 +8,44 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 210 25% 12%;
-    --foreground: 174 15% 95%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
 
-    --card: 210 20% 16%;
-    --card-foreground: 174 10% 92%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 210 20% 16%;
-    --popover-foreground: 174 10% 92%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 174 72% 56%;
-    --primary-foreground: 210 40% 2%;
-    --primary-glow: 174 82% 66%;
+    --primary: 142 76% 36%;
+    --primary-foreground: 355 7% 97%;
+    --primary-glow: 142 76% 46%;
 
-    --secondary: 210 15% 22%;
-    --secondary-foreground: 174 10% 88%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 210 12% 25%;
-    --muted-foreground: 210 8% 70%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
 
-    --accent: 174 42% 25%;
-    --accent-foreground: 174 72% 85%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 210 12% 25%;
-    --input: 210 12% 25%;
-    --ring: 174 72% 56%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 142 76% 36%;
 
     --success: 142 76% 36%;
     --success-foreground: 355 7% 97%;
     --warning: 38 92% 50%;
     --warning-foreground: 20 14.3% 4.1%;
-    --info: 174 89% 58%;
-    --info-foreground: 210 40% 2%;
+    --info: 199 89% 48%;
+    --info-foreground: 0 0% 98%;
 
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
-    --gradient-card: linear-gradient(145deg, hsl(210 18% 18%), hsl(174 20% 20%));
+    --gradient-card: linear-gradient(145deg, hsl(240 5.9% 10%), hsl(240 3.7% 15.9%));
     --shadow-glow: 0 0 20px hsl(var(--primary) / 0.3);
     --shadow-card: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
