@@ -80,7 +80,7 @@ export function AppSidebar({
         <SidebarGroup>
           <SidebarGroupLabel>Configuration Types</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-2">
               {messageTypes.map((type) => {
                 const IconComponent = iconMap[type.id as keyof typeof iconMap] || iconMap.default
                 const isActive = selectedMessageType === type.id
@@ -90,14 +90,14 @@ export function AppSidebar({
                     <SidebarMenuButton
                       onClick={() => onMessageTypeSelect(type.id)}
                       className={cn(
-                        "w-full justify-start transition-all duration-200",
+                        "w-full justify-start transition-all duration-200 py-3 px-3",
                         isActive && "bg-primary text-primary-foreground"
                       )}
                       isActive={isActive}
                     >
                       <IconComponent className="h-4 w-4" />
                       {!collapsed && (
-                        <div className="flex flex-col items-start">
+                        <div className="flex flex-col items-start ml-3">
                           <span className="font-medium">{type.name}</span>
                           <span className="text-xs opacity-70 truncate max-w-32">
                             {type.description}
