@@ -74,9 +74,9 @@ export function DeviceFeedbackPanel({ feedbackMessages }: DeviceFeedbackPanelPro
       </div>
       
       <ScrollArea className="h-[calc(100vh-8rem)]">
-        <div className="p-4 space-y-3">
+        <div className="p-4 space-y-2">
           {feedbackMessages.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground bg-card/30 rounded-lg border border-dashed border-border">
+            <div className="text-center py-6 text-muted-foreground bg-card/20 rounded border border-dashed border-border/50">
               <Info className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p className="text-sm">No messages yet</p>
               <p className="text-xs">Device responses will appear here</p>
@@ -90,25 +90,23 @@ export function DeviceFeedbackPanel({ feedbackMessages }: DeviceFeedbackPanelPro
                 <div
                   key={message.id}
                   className={cn(
-                    "p-3 rounded-lg border-2 border-l-4 bg-card shadow-card backdrop-blur-sm transition-all duration-200 hover:shadow-section hover:scale-[1.02]",
+                    "p-2 rounded border border-l-2 bg-card/80 backdrop-blur-sm transition-all duration-200 hover:bg-card hover:border-l-4",
                     getFeedbackBorderColor(message.type),
-                    isExpanded && "ring-2 ring-border/50 shadow-lg"
+                    isExpanded && "bg-card border-l-4 shadow-sm"
                   )}
                 >
-                  <div className="flex items-start gap-2 mb-1">
-                    <div className="mt-0.5">
-                      {getFeedbackIcon(message.type)}
-                    </div>
+                  <div className="flex items-start gap-2">
+                    {getFeedbackIcon(message.type)}
                     <div className="flex-1 min-w-0">
                       {message.configName && (
-                        <div className="text-xs font-semibold text-primary mb-1 bg-primary/15 px-2 py-1 rounded-full border border-primary/20">
+                        <div className="text-xs font-medium text-primary mb-1 bg-primary/10 px-1.5 py-0.5 rounded-md inline-block">
                           {message.configName}
                         </div>
                       )}
-                      <p className="text-sm font-semibold leading-tight text-foreground">
+                      <p className="text-sm font-medium leading-snug text-foreground">
                         {isExpanded ? message.message : truncateText(message.message)}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1 font-medium">
+                      <p className="text-xs text-muted-foreground">
                         {message.timestamp.toLocaleTimeString()}
                       </p>
                     </div>
@@ -116,7 +114,7 @@ export function DeviceFeedbackPanel({ feedbackMessages }: DeviceFeedbackPanelPro
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 ml-2 opacity-70 hover:opacity-100 hover:bg-accent/80 border border-border/50"
+                        className="h-5 w-5 opacity-60 hover:opacity-100"
                         onClick={() => toggleExpanded(message.id)}
                       >
                         {isExpanded ? (
@@ -127,13 +125,10 @@ export function DeviceFeedbackPanel({ feedbackMessages }: DeviceFeedbackPanelPro
                       </Button>
                     )}
                   </div>
-                  {message.details && (
-                    <div className="mt-2 pt-2 border-t border-border/30">
-                      <div className={cn(
-                        "text-xs text-muted-foreground leading-relaxed transition-all duration-200 bg-muted/30 p-2 rounded-md",
-                        isExpanded ? "opacity-100" : "opacity-80"
-                      )}>
-                        {isExpanded ? message.details : truncateText(message.details, 80)}
+                  {message.details && isExpanded && (
+                    <div className="mt-2 pt-2 border-t border-border/20">
+                      <div className="text-xs text-muted-foreground leading-relaxed bg-muted/20 p-2 rounded">
+                        {message.details}
                       </div>
                     </div>
                   )}
