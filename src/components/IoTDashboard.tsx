@@ -222,10 +222,12 @@ const IoTDashboard: React.FC = () => {
       setFeedbackMessages(prev => [feedbackMessage, ...prev.slice(0, 9)]); // Keep last 10 messages
 
       toast({
-        variant: response.type === 'error' ? 'destructive' : response.type === 'success' ? 'default' : 'default',
-        title: response.type === 'success' ? 'Success' : response.type === 'error' ? 'Error' : 'Info',
+        variant: response.type === 'error' ? 'destructive' : 'default',
+        title: response.type === 'success' ? 'Success' : response.type === 'error' ? 'Error' : response.type === 'warning' ? 'Warning' : 'Info',
         description: response.message,
-        className: response.type === 'success' ? 'border-success bg-success text-white' : ''
+        className: response.type === 'success' ? 'border-success bg-success text-white' : 
+                   response.type === 'info' ? 'border-info bg-info text-white' :
+                   response.type === 'warning' ? 'border-warning bg-warning text-white' : ''
       });
 
     } catch (error) {
