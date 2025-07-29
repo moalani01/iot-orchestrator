@@ -91,7 +91,7 @@ export function AppSidebar({
                       onClick={() => onMessageTypeSelect(type.id)}
                       className={cn(
                         "w-full justify-start transition-all duration-200",
-                        isActive && "bg-primary text-primary-foreground shadow-glow"
+                        isActive && "bg-primary text-primary-foreground"
                       )}
                       isActive={isActive}
                     >
