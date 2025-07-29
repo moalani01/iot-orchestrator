@@ -12,7 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import { Settings, Send } from 'lucide-react';
 import { AppSidebar } from './AppSidebar';
 import { DeviceFeedbackPanel } from './DeviceFeedbackPanel';
-import { ThemeToggle } from './ThemeToggle';
 
 interface MessageField {
   name: string;
@@ -132,11 +131,32 @@ const IoTDashboard: React.FC = () => {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
     
-    // Simulate various response scenarios
+    // Simulate various response scenarios with more detailed responses
     const scenarios = [
-      { type: 'success', message: 'Configuration applied successfully', probability: 0.7 },
-      { type: 'error', message: 'Failed to apply configuration', details: 'Invalid sensor type for current firmware', probability: 0.2 },
-      { type: 'info', message: 'Configuration queued for processing', details: 'Device is currently busy, will apply when available', probability: 0.1 }
+      { 
+        type: 'success', 
+        message: 'Configuration applied successfully to all sensor modules', 
+        details: 'All parameters have been validated and deployed to the target device. The new configuration will take effect immediately and sensor readings will be available within 30 seconds. System health checks passed successfully.',
+        probability: 0.6 
+      },
+      { 
+        type: 'error', 
+        message: 'Failed to apply configuration due to validation errors', 
+        details: 'The following issues were detected: Invalid sensor type compatibility with current firmware version 2.1.3. Please ensure that the selected sensor type is supported by your device model IoT-SENS-PRO-V2. Check the device manual section 4.2 for compatible sensor configurations.',
+        probability: 0.25 
+      },
+      { 
+        type: 'info', 
+        message: 'Configuration queued for processing during next maintenance window', 
+        details: 'The device is currently performing critical operations and cannot accept new configurations. Your request has been queued and will be automatically processed during the next scheduled maintenance window at 02:00 UTC. You will receive a confirmation notification once the configuration is applied.',
+        probability: 0.1 
+      },
+      { 
+        type: 'warning', 
+        message: 'Configuration applied with non-critical warnings', 
+        details: 'The configuration was successfully applied, however some non-critical warnings were detected: Sample rate of 10Hz may cause increased power consumption and reduce battery life by approximately 15%. Consider lowering the sample rate for battery-powered deployments.',
+        probability: 0.05 
+      }
     ];
 
     const random = Math.random();
@@ -146,7 +166,7 @@ const IoTDashboard: React.FC = () => {
       cumulative += scenario.probability;
       if (random <= cumulative) {
         return {
-          type: scenario.type as 'success' | 'error' | 'info',
+          type: scenario.type as 'success' | 'error' | 'info' | 'warning',
           message: scenario.message,
           details: scenario.details
         };
@@ -192,7 +212,7 @@ const IoTDashboard: React.FC = () => {
       const feedbackMessage: FeedbackMessage = {
         id: Date.now().toString(),
         timestamp: new Date(),
-        type: response.type as 'success' | 'error' | 'info',
+        type: response.type as 'success' | 'error' | 'info' | 'warning',
         message: response.message,
         details: response.details,
         configType: selectedMessageType,
@@ -315,7 +335,6 @@ const IoTDashboard: React.FC = () => {
               </div>
               <div className="flex items-center gap-3">
                 <Settings className="w-6 h-6 text-primary" />
-                <ThemeToggle />
               </div>
             </div>
           </header>

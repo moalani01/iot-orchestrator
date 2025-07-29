@@ -12,6 +12,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
+import { ThemeToggle } from "./ThemeToggle"
 
 interface MessageField {
   name: string;
@@ -54,8 +55,9 @@ export function AppSidebar({
 
   return (
     <Sidebar className={cn(collapsed ? "w-14" : "w-56")} collapsible="icon">
-      <div className="flex items-center p-4">
+      <div className="flex items-center justify-between p-4 border-b border-border">
         <SidebarTrigger />
+        <ThemeToggle />
       </div>
       
       <SidebarContent>
