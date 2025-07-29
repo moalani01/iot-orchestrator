@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Settings, Send } from 'lucide-react';
 import { AppSidebar } from './AppSidebar';
 import { DeviceFeedbackPanel } from './DeviceFeedbackPanel';
+import { ThemeToggle } from './ThemeToggle';
 
 interface MessageField {
   name: string;
@@ -35,6 +36,8 @@ interface FeedbackMessage {
   type: 'success' | 'error' | 'warning' | 'info';
   message: string;
   details?: string;
+  configType?: string;
+  configName?: string;
 }
 
 const messageTypes: MessageType[] = [
@@ -43,10 +46,21 @@ const messageTypes: MessageType[] = [
     name: 'Sensor Configuration',
     description: 'Configure sensor parameters and sampling rates',
     fields: [
-      { name: 'sensor_type', label: 'Sensor Type', type: 'dropdown', options: ['Temperature', 'Humidity', 'Pressure', 'Light'], required: true },
+      { name: 'sensor_type', label: 'Sensor Type', type: 'dropdown', options: ['Temperature', 'Humidity', 'Pressure', 'Light', 'Motion', 'Sound', 'Air Quality'], required: true },
       { name: 'sample_rate', label: 'Sample Rate (Hz)', type: 'number', required: true, defaultValue: 1 },
       { name: 'enabled', label: 'Sensor Enabled', type: 'boolean', defaultValue: true },
-      { name: 'calibration_mode', label: 'Calibration Mode', type: 'radio', options: ['Auto', 'Manual', 'Factory'], defaultValue: 'Auto' }
+      { name: 'calibration_mode', label: 'Calibration Mode', type: 'radio', options: ['Auto', 'Manual', 'Factory'], defaultValue: 'Auto' },
+      { name: 'precision', label: 'Precision Level', type: 'dropdown', options: ['Low', 'Medium', 'High', 'Ultra'], defaultValue: 'Medium' },
+      { name: 'threshold_min', label: 'Minimum Threshold', type: 'number', defaultValue: 0 },
+      { name: 'threshold_max', label: 'Maximum Threshold', type: 'number', defaultValue: 100 },
+      { name: 'data_format', label: 'Data Format', type: 'radio', options: ['JSON', 'CSV', 'Binary', 'XML'], defaultValue: 'JSON' },
+      { name: 'compression', label: 'Enable Data Compression', type: 'boolean', defaultValue: false },
+      { name: 'buffer_size', label: 'Buffer Size (KB)', type: 'number', defaultValue: 64 },
+      { name: 'auto_scaling', label: 'Auto Scaling', type: 'boolean', defaultValue: true },
+      { name: 'filter_type', label: 'Signal Filter', type: 'dropdown', options: ['None', 'Low Pass', 'High Pass', 'Band Pass', 'Notch'], defaultValue: 'Low Pass' },
+      { name: 'alert_enabled', label: 'Enable Alerts', type: 'boolean', defaultValue: true },
+      { name: 'alert_email', label: 'Alert Email', type: 'text', defaultValue: '' },
+      { name: 'logging_level', label: 'Logging Level', type: 'radio', options: ['Debug', 'Info', 'Warning', 'Error'], defaultValue: 'Info' }
     ]
   },
   {
@@ -180,7 +194,9 @@ const IoTDashboard: React.FC = () => {
         timestamp: new Date(),
         type: response.type as 'success' | 'error' | 'info',
         message: response.message,
-        details: response.details
+        details: response.details,
+        configType: selectedMessageType,
+        configName: currentMessageType?.name
       };
 
       setFeedbackMessages(prev => [feedbackMessage, ...prev.slice(0, 9)]); // Keep last 10 messages
@@ -197,7 +213,9 @@ const IoTDashboard: React.FC = () => {
         timestamp: new Date(),
         type: 'error',
         message: 'Communication failed',
-        details: 'Unable to reach IoT device'
+        details: 'Unable to reach IoT device',
+        configType: selectedMessageType,
+        configName: currentMessageType?.name
       };
 
       setFeedbackMessages(prev => [errorMessage, ...prev.slice(0, 9)]);
@@ -296,12 +314,13 @@ const IoTDashboard: React.FC = () => {
                   <h1 className="text-xl font-bold text-foreground">IoT Device Configuration</h1>
                 </div>
               </div>
+              <ThemeToggle />
             </div>
           </header>
 
           <div className="flex-1 flex">
             {/* Main Configuration Area */}
-            <main className="flex-1 p-6">
+            <main className="flex-1 p-6 overflow-auto">
               <div className="max-w-2xl mx-auto">
                 {currentMessageType ? (
                   <Card className="shadow-card">
@@ -313,7 +332,7 @@ const IoTDashboard: React.FC = () => {
                         {currentMessageType.description}
                       </p>
                     </CardHeader>
-                    <CardContent className="space-y-6">
+                    <CardContent className="space-y-6 max-h-[calc(100vh-16rem)] overflow-y-auto">
                       {currentMessageType.fields.map(field => (
                         <div key={field.name} className="space-y-3">
                           <Label className="text-sm font-semibold text-foreground">
@@ -328,7 +347,7 @@ const IoTDashboard: React.FC = () => {
                       
                       <Separator className="my-8" />
                       
-                      <div className="flex justify-center">
+                      <div className="flex justify-center pb-6">
                         <Button 
                           onClick={handleSendMessage}
                           className="px-8 py-3 text-base font-medium shadow-glow"

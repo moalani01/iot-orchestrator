@@ -9,6 +9,8 @@ interface FeedbackMessage {
   type: 'success' | 'error' | 'warning' | 'info'
   message: string
   details?: string
+  configType?: string
+  configName?: string
 }
 
 interface DeviceFeedbackPanelProps {
@@ -73,6 +75,11 @@ export function DeviceFeedbackPanel({ feedbackMessages }: DeviceFeedbackPanelPro
                 <div className="flex items-start gap-2 mb-1">
                   {getFeedbackIcon(message.type)}
                   <div className="flex-1 min-w-0">
+                    {message.configName && (
+                      <div className="text-xs font-medium text-primary mb-1 bg-primary/10 px-2 py-1 rounded-md">
+                        {message.configName}
+                      </div>
+                    )}
                     <p className="text-sm font-medium leading-tight">
                       {message.message}
                     </p>
