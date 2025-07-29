@@ -27,15 +27,15 @@ All colors MUST be HSL.
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
 
-    --accent: 200 98% 39%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 9%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 89.8%;
+    --border: 0 0% 85%;
     --input: 0 0% 89.8%;
-    --ring: 200 98% 39%;
+    --ring: 0 0% 45%;
 
     --success: 142 76% 36%;
     --success-foreground: 355 7% 97%;
