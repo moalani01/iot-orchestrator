@@ -53,8 +53,10 @@ export function AppSidebar({
   const collapsed = state === "collapsed"
 
   return (
-    <Sidebar className={cn(collapsed ? "w-14" : "w-64")} collapsible="icon">
-      <SidebarTrigger className="m-2 self-end" />
+    <Sidebar className={cn(collapsed ? "w-14" : "w-56")} collapsible="icon">
+      <div className="flex items-center p-4">
+        <SidebarTrigger />
+      </div>
       
       <SidebarContent>
         {/* Connection Status */}

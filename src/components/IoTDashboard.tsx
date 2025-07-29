@@ -202,9 +202,10 @@ const IoTDashboard: React.FC = () => {
       setFeedbackMessages(prev => [feedbackMessage, ...prev.slice(0, 9)]); // Keep last 10 messages
 
       toast({
-        variant: response.type === 'error' ? 'destructive' : 'default',
+        variant: response.type === 'error' ? 'destructive' : response.type === 'success' ? 'default' : 'default',
         title: response.type === 'success' ? 'Success' : response.type === 'error' ? 'Error' : 'Info',
-        description: response.message
+        description: response.message,
+        className: response.type === 'success' ? 'border-success bg-success/10 text-success-foreground' : ''
       });
 
     } catch (error) {
@@ -308,13 +309,14 @@ const IoTDashboard: React.FC = () => {
           <header className="h-16 border-b border-border bg-gradient-to-r from-background to-card/50 backdrop-blur-sm">
             <div className="flex items-center justify-between h-full px-6">
               <div className="flex items-center gap-3">
-                <SidebarTrigger />
-                <Settings className="w-6 h-6 text-primary" />
                 <div>
                   <h1 className="text-xl font-bold text-foreground">IoT Device Configuration</h1>
                 </div>
               </div>
-              <ThemeToggle />
+              <div className="flex items-center gap-3">
+                <Settings className="w-6 h-6 text-primary" />
+                <ThemeToggle />
+              </div>
             </div>
           </header>
 
