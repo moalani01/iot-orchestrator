@@ -76,37 +76,44 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* Base colors with more nuanced greys */
+    --background: 240 6% 8%;
+    --foreground: 240 5% 96%;
 
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
+    /* Card variations for better depth */
+    --card: 240 5% 11%;
+    --card-foreground: 240 4% 94%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 240 4% 13%;
+    --popover-foreground: 240 4% 94%;
 
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --primary-hover: 0 0% 90%;
-    --primary-glow: 0 0% 80%;
+    /* Primary with better contrast */
+    --primary: 240 4% 94%;
+    --primary-foreground: 240 6% 12%;
+    --primary-hover: 240 5% 88%;
+    --primary-glow: 240 10% 75%;
 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --secondary-hover: 240 5% 11%;
+    /* Secondary with more variation */
+    --secondary: 240 4% 18%;
+    --secondary-foreground: 240 4% 92%;
+    --secondary-hover: 240 5% 22%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    /* Muted with better hierarchy */
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 4% 68%;
 
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --accent-hover: 240 5% 11%;
+    /* Accent with distinctive shade */
+    --accent: 240 5% 20%;
+    --accent-foreground: 240 4% 92%;
+    --accent-hover: 240 5% 24%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --border-strong: 240 5% 11%;
-    --input: 240 3.7% 15.9%;
+    /* Borders with more subtle variations */
+    --border: 240 4% 20%;
+    --border-strong: 240 5% 25%;
+    --input: 240 4% 16%;
     --ring: 240 4.9% 83.9%;
 
     --success: 142 76% 36%;
@@ -116,21 +123,23 @@ All colors MUST be HSL.
     --info: 199 89% 48%;
     --info-foreground: 0 0% 98%;
 
+    /* Enhanced gradients with depth */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-hover)));
-    --gradient-card: linear-gradient(145deg, hsl(240 3.7% 15.9%), hsl(240 10% 3.9%));
-    --gradient-subtle: linear-gradient(to bottom, hsl(240 10% 3.9%), hsl(240 3.7% 15.9%));
-    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.3);
-    --shadow-card: 0 4px 12px -4px hsl(0 0% 0% / 0.25), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
-    --shadow-section: 0 1px 3px hsl(0 0% 0% / 0.3), 0 1px 2px hsl(0 0% 0% / 0.2);
+    --gradient-card: linear-gradient(145deg, hsl(240 4% 13%), hsl(240 6% 9%));
+    --gradient-subtle: linear-gradient(to bottom, hsl(240 6% 8%), hsl(240 4% 14%));
+    --shadow-glow: 0 0 20px hsl(var(--primary) / 0.2);
+    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.4), 0 2px 8px -1px hsl(0 0% 0% / 0.2);
+    --shadow-section: 0 2px 6px hsl(0 0% 0% / 0.4), 0 1px 3px hsl(0 0% 0% / 0.25);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
+    /* Sidebar with distinct hierarchy */
+    --sidebar-background: 240 5% 10%;
+    --sidebar-foreground: 240 4% 90%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-accent: 240 4% 16%;
+    --sidebar-accent-foreground: 240 4% 88%;
+    --sidebar-border: 240 4% 18%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
