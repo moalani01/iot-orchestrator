@@ -74,9 +74,9 @@ export function DeviceFeedbackPanel({ feedbackMessages }: DeviceFeedbackPanelPro
       </div>
       
       <ScrollArea className="h-[calc(100vh-8rem)]">
-        <div className="p-4 space-y-3">
+        <div className="p-4 space-y-4">
           {feedbackMessages.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="text-center py-12 text-muted-foreground bg-card/30 rounded-lg border border-dashed border-border">
               <Info className="h-8 w-8 mx-auto mb-2 opacity-50" />
               <p className="text-sm">No messages yet</p>
               <p className="text-xs">Device responses will appear here</p>
@@ -90,22 +90,25 @@ export function DeviceFeedbackPanel({ feedbackMessages }: DeviceFeedbackPanelPro
                 <div
                   key={message.id}
                   className={cn(
-                    "p-3 rounded-md border-l-4 bg-card/50 backdrop-blur-sm shadow-sm transition-all duration-200 hover:shadow-md",
-                    getFeedbackBorderColor(message.type)
+                    "p-4 rounded-lg border-2 border-l-4 bg-card shadow-card backdrop-blur-sm transition-all duration-200 hover:shadow-section hover:scale-[1.02]",
+                    getFeedbackBorderColor(message.type),
+                    isExpanded && "ring-2 ring-border/50 shadow-lg"
                   )}
                 >
-                  <div className="flex items-start gap-2 mb-1">
-                    {getFeedbackIcon(message.type)}
+                  <div className="flex items-start gap-3 mb-2">
+                    <div className="mt-0.5">
+                      {getFeedbackIcon(message.type)}
+                    </div>
                     <div className="flex-1 min-w-0">
                       {message.configName && (
-                        <div className="text-xs font-medium text-primary mb-1 bg-primary/10 px-2 py-1 rounded-md">
+                        <div className="text-xs font-semibold text-primary mb-2 bg-primary/15 px-3 py-1.5 rounded-full border border-primary/20">
                           {message.configName}
                         </div>
                       )}
-                      <p className="text-sm font-medium leading-tight">
+                      <p className="text-sm font-semibold leading-relaxed text-foreground">
                         {isExpanded ? message.message : truncateText(message.message)}
                       </p>
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-muted-foreground mt-2 font-medium">
                         {message.timestamp.toLocaleTimeString()}
                       </p>
                     </div>
@@ -113,7 +116,7 @@ export function DeviceFeedbackPanel({ feedbackMessages }: DeviceFeedbackPanelPro
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6 ml-2 opacity-60 hover:opacity-100"
+                        className="h-7 w-7 ml-2 opacity-70 hover:opacity-100 hover:bg-accent/80 border border-border/50"
                         onClick={() => toggleExpanded(message.id)}
                       >
                         {isExpanded ? (
@@ -125,11 +128,13 @@ export function DeviceFeedbackPanel({ feedbackMessages }: DeviceFeedbackPanelPro
                     )}
                   </div>
                   {message.details && (
-                    <div className={cn(
-                      "text-xs text-muted-foreground mt-2 pl-6 leading-relaxed transition-all duration-200",
-                      isExpanded ? "opacity-100" : "opacity-70"
-                    )}>
-                      {isExpanded ? message.details : truncateText(message.details, 80)}
+                    <div className="mt-3 pt-3 border-t border-border/30">
+                      <div className={cn(
+                        "text-xs text-muted-foreground leading-relaxed transition-all duration-200 bg-muted/30 p-3 rounded-md",
+                        isExpanded ? "opacity-100" : "opacity-80"
+                      )}>
+                        {isExpanded ? message.details : truncateText(message.details, 80)}
+                      </div>
                     </div>
                   )}
                 </div>
