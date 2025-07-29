@@ -91,7 +91,6 @@ const IoTDashboard: React.FC = () => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [feedbackMessages, setFeedbackMessages] = useState<FeedbackMessage[]>([]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
-  const [feedbackPanelCollapsed, setFeedbackPanelCollapsed] = useState<boolean>(false);
   const { toast } = useToast();
 
   // Load saved data from localStorage
@@ -403,11 +402,7 @@ const IoTDashboard: React.FC = () => {
             </main>
 
             {/* Device Feedback Panel */}
-            <DeviceFeedbackPanel 
-              feedbackMessages={feedbackMessages} 
-              collapsed={feedbackPanelCollapsed}
-              onToggleCollapse={() => setFeedbackPanelCollapsed(!feedbackPanelCollapsed)}
-            />
+            <DeviceFeedbackPanel feedbackMessages={feedbackMessages} />
           </div>
         </div>
       </div>
