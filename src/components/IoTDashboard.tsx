@@ -97,6 +97,7 @@ const IoTDashboard: React.FC = () => {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [feedbackMessages, setFeedbackMessages] = useState<FeedbackMessage[]>([]);
   const [expandedMessages, setExpandedMessages] = useState<Set<string>>(new Set());
+  const [expandedMessageTypes, setExpandedMessageTypes] = useState<Set<string>>(new Set());
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const { toast } = useToast();
 
@@ -310,6 +311,18 @@ const IoTDashboard: React.FC = () => {
     });
   };
 
+  const toggleMessageTypeExpansion = (messageTypeId: string) => {
+    setExpandedMessageTypes(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(messageTypeId)) {
+        newSet.delete(messageTypeId);
+      } else {
+        newSet.add(messageTypeId);
+      }
+      return newSet;
+    });
+  };
+
   const getFeedbackIcon = (type: 'success' | 'error' | 'info') => {
     switch (type) {
       case 'success': return <CheckCircle className="w-4 h-4 text-success" />;
@@ -356,21 +369,40 @@ const IoTDashboard: React.FC = () => {
             <CardContent className="flex-1 overflow-hidden">
               <ScrollArea className="h-full">
                 <div className="space-y-3 pr-4">
-                  {messageTypes.map(messageType => (
-                    <Button
-                      key={messageType.id}
-                      variant={selectedMessageType === messageType.id ? 'default' : 'outline'}
-                      className="w-full justify-start text-left h-auto p-4 overflow-hidden"
-                      onClick={() => setSelectedMessageType(messageType.id)}
-                    >
-                      <div className="min-w-0 w-full overflow-hidden">
-                        <div className="font-medium truncate w-full">{messageType.name}</div>
-                        <div className="text-sm text-muted-foreground mt-1 line-clamp-2 overflow-hidden text-ellipsis">
-                          {messageType.description}
-                        </div>
+                  {messageTypes.map(messageType => {
+                    const isExpanded = expandedMessageTypes.has(messageType.id);
+                    const shouldTruncate = shouldTruncateText(messageType.description);
+                    
+                    return (
+                      <div key={messageType.id} className="space-y-2">
+                        <Button
+                          variant={selectedMessageType === messageType.id ? 'default' : 'outline'}
+                          className="w-full justify-start text-left h-auto p-4 overflow-hidden"
+                          onClick={() => setSelectedMessageType(messageType.id)}
+                        >
+                          <div className="min-w-0 w-full overflow-hidden">
+                            <div className="font-medium truncate w-full">{messageType.name}</div>
+                            <div className="text-sm text-muted-foreground mt-1 overflow-hidden text-ellipsis">
+                              {isExpanded || !shouldTruncate
+                                ? messageType.description
+                                : getTruncatedText(messageType.description)
+                              }
+                            </div>
+                          </div>
+                        </Button>
+                        {shouldTruncate && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-auto p-1 text-xs text-primary hover:text-primary/80 ml-4"
+                            onClick={() => toggleMessageTypeExpansion(messageType.id)}
+                          >
+                            {isExpanded ? 'Show less' : 'Show more'}
+                          </Button>
+                        )}
                       </div>
-                    </Button>
-                  ))}
+                    );
+                  })}
                 </div>
               </ScrollArea>
             </CardContent>
