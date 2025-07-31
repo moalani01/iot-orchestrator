@@ -186,7 +186,7 @@ const IoTDashboard: React.FC = () => {
       setFeedbackMessages(prev => [feedbackMessage, ...prev.slice(0, 9)]); // Keep last 10 messages
 
       toast({
-        variant: response.type === 'error' ? 'destructive' : 'default',
+        variant: response.type === 'error' ? 'destructive' : response.type === 'success' ? 'success' : 'info',
         title: response.type === 'success' ? 'Success' : response.type === 'error' ? 'Error' : 'Info',
         description: response.message
       });
