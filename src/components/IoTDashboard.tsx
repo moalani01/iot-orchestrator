@@ -361,11 +361,11 @@ const IoTDashboard: React.FC = () => {
                 {currentMessageType ? currentMessageType.name : 'Select Message Type'}
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 flex flex-col">
+            <CardContent className="flex-1 flex flex-col overflow-hidden">
               {currentMessageType ? (
                 <>
                   {/* Scrollable Fields */}
-                  <div className="flex-1 overflow-hidden">
+                  <div className="flex-1 min-h-0">
                     <ScrollArea className="h-full">
                       <div className="space-y-4 pr-4">
                         {currentMessageType.fields.map(field => (
@@ -382,7 +382,7 @@ const IoTDashboard: React.FC = () => {
                   </div>
                   
                   {/* Fixed Send Button */}
-                  <div className="pt-4 border-t mt-4">
+                  <div className="pt-4 border-t mt-4 flex-shrink-0">
                     <Button 
                       onClick={handleSendMessage}
                       className="w-full"
