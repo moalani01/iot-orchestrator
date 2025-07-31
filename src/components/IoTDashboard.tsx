@@ -96,6 +96,7 @@ const IoTDashboard: React.FC = () => {
   const [selectedMessageType, setSelectedMessageType] = useState<string>('');
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [feedbackMessages, setFeedbackMessages] = useState<FeedbackMessage[]>([]);
+  const [expandedMessages, setExpandedMessages] = useState<Set<string>>(new Set());
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const { toast } = useToast();
 
@@ -137,11 +138,14 @@ const IoTDashboard: React.FC = () => {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
     
-    // Simulate various response scenarios
+    // Simulate various response scenarios with some longer messages
     const scenarios = [
-      { type: 'success', message: 'Configuration applied successfully', probability: 0.7 },
-      { type: 'error', message: 'Failed to apply configuration', details: 'Invalid sensor type for current firmware', probability: 0.2 },
-      { type: 'info', message: 'Configuration queued for processing', details: 'Device is currently busy, will apply when available', probability: 0.1 }
+      { type: 'success', message: 'Configuration applied successfully', probability: 0.4 },
+      { type: 'success', message: 'Advanced configuration profile activated successfully', details: 'The new configuration has been applied to all connected sensors. The system has automatically optimized power consumption settings, updated communication protocols to use the latest security standards, and synchronized all device clocks. All subsystems are now operating at peak efficiency with enhanced monitoring capabilities enabled.', probability: 0.2 },
+      { type: 'error', message: 'Failed to apply configuration', details: 'Invalid sensor type for current firmware', probability: 0.1 },
+      { type: 'error', message: 'Critical configuration error detected', details: 'The configuration could not be applied due to multiple compatibility issues. The selected communication protocol is not supported by the current firmware version (v2.1.3). Additionally, the power management settings conflict with the hardware specifications of the connected sensors. Please update the firmware to version 2.2.0 or higher, verify sensor compatibility, and ensure all network requirements are met before attempting to apply this configuration again.', probability: 0.1 },
+      { type: 'info', message: 'Configuration queued for processing', details: 'Device is currently busy, will apply when available', probability: 0.1 },
+      { type: 'info', message: 'Partial configuration applied with warnings', details: 'The configuration has been partially applied to your IoT device network. While most settings were successfully updated, some advanced features could not be activated due to current system limitations. The temperature sensors have been configured with the new sampling rate, communication protocols have been updated, and power management is now optimized. However, the redundancy backup system and advanced encryption features are pending due to insufficient memory allocation. These features will be automatically enabled once the next system maintenance cycle completes, which is scheduled for the next 24-hour period.', probability: 0.1 }
     ];
 
     const random = Math.random();
@@ -294,6 +298,18 @@ const IoTDashboard: React.FC = () => {
     }
   };
 
+  const toggleMessageExpansion = (messageId: string) => {
+    setExpandedMessages(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(messageId)) {
+        newSet.delete(messageId);
+      } else {
+        newSet.add(messageId);
+      }
+      return newSet;
+    });
+  };
+
   const getFeedbackIcon = (type: 'success' | 'error' | 'info') => {
     switch (type) {
       case 'success': return <CheckCircle className="w-4 h-4 text-success" />;
@@ -301,6 +317,10 @@ const IoTDashboard: React.FC = () => {
       case 'info': return <Clock className="w-4 h-4 text-info" />;
     }
   };
+
+  const shouldTruncateText = (text: string) => text.length > 100;
+
+  const getTruncatedText = (text: string) => text.substring(0, 100) + '...';
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -423,26 +443,50 @@ const IoTDashboard: React.FC = () => {
               <ScrollArea className="h-full">
                 {feedbackMessages.length > 0 ? (
                   <div className="space-y-3 pr-4">
-                    {feedbackMessages.map(feedback => (
-                      <div key={feedback.id} className="p-3 border rounded-lg">
-                        <div className="flex items-start gap-3 min-w-0">
-                          <div className="flex-shrink-0">
-                            {getFeedbackIcon(feedback.type)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium break-words">{feedback.message}</div>
-                            {feedback.details && (
-                              <div className="text-xs text-muted-foreground mt-1 break-words">
-                                {feedback.details}
+                    {feedbackMessages.map(feedback => {
+                      const isExpanded = expandedMessages.has(feedback.id);
+                      const shouldTruncateMessage = shouldTruncateText(feedback.message);
+                      const shouldTruncateDetails = feedback.details && shouldTruncateText(feedback.details);
+                      
+                      return (
+                        <div key={feedback.id} className="p-3 border rounded-lg">
+                          <div className="flex items-start gap-3 min-w-0">
+                            <div className="flex-shrink-0">
+                              {getFeedbackIcon(feedback.type)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium break-words">
+                                {isExpanded || !shouldTruncateMessage 
+                                  ? feedback.message 
+                                  : getTruncatedText(feedback.message)
+                                }
                               </div>
-                            )}
-                            <div className="text-xs text-muted-foreground mt-2">
-                              {feedback.timestamp.toLocaleTimeString()}
+                              {feedback.details && (
+                                <div className="text-xs text-muted-foreground mt-1 break-words">
+                                  {isExpanded || !shouldTruncateDetails
+                                    ? feedback.details
+                                    : getTruncatedText(feedback.details)
+                                  }
+                                </div>
+                              )}
+                              {(shouldTruncateMessage || shouldTruncateDetails) && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-auto p-0 text-xs text-primary hover:text-primary/80 mt-1"
+                                  onClick={() => toggleMessageExpansion(feedback.id)}
+                                >
+                                  {isExpanded ? 'Show less' : 'Show more'}
+                                </Button>
+                              )}
+                              <div className="text-xs text-muted-foreground mt-2">
+                                {feedback.timestamp.toLocaleTimeString()}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="flex-1 flex items-center justify-center text-muted-foreground">
