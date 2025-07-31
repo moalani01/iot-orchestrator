@@ -6,12 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { useToast } from '@/hooks/use-toast';
-import { Settings, Send } from 'lucide-react';
-import { AppSidebar } from './AppSidebar';
-import { DeviceFeedbackPanel } from './DeviceFeedbackPanel';
+import { Settings, Send, Activity, CheckCircle, XCircle, Clock } from 'lucide-react';
 
 interface MessageField {
   name: string;
@@ -32,34 +31,21 @@ interface MessageType {
 interface FeedbackMessage {
   id: string;
   timestamp: Date;
-  type: 'success' | 'error' | 'warning' | 'info';
+  type: 'success' | 'error' | 'info';
   message: string;
   details?: string;
-  configType?: string;
-  configName?: string;
 }
 
 const messageTypes: MessageType[] = [
   {
-    id: 'sensor-config',
+    id: 'sensor_config',
     name: 'Sensor Configuration',
     description: 'Configure sensor parameters and sampling rates',
     fields: [
-      { name: 'sensor_type', label: 'Sensor Type', type: 'dropdown', options: ['Temperature', 'Humidity', 'Pressure', 'Light', 'Motion', 'Sound', 'Air Quality'], required: true },
+      { name: 'sensor_type', label: 'Sensor Type', type: 'dropdown', options: ['Temperature', 'Humidity', 'Pressure', 'Light'], required: true },
       { name: 'sample_rate', label: 'Sample Rate (Hz)', type: 'number', required: true, defaultValue: 1 },
       { name: 'enabled', label: 'Sensor Enabled', type: 'boolean', defaultValue: true },
-      { name: 'calibration_mode', label: 'Calibration Mode', type: 'radio', options: ['Auto', 'Manual', 'Factory'], defaultValue: 'Auto' },
-      { name: 'precision', label: 'Precision Level', type: 'dropdown', options: ['Low', 'Medium', 'High', 'Ultra'], defaultValue: 'Medium' },
-      { name: 'threshold_min', label: 'Minimum Threshold', type: 'number', defaultValue: 0 },
-      { name: 'threshold_max', label: 'Maximum Threshold', type: 'number', defaultValue: 100 },
-      { name: 'data_format', label: 'Data Format', type: 'radio', options: ['JSON', 'CSV', 'Binary', 'XML'], defaultValue: 'JSON' },
-      { name: 'compression', label: 'Enable Data Compression', type: 'boolean', defaultValue: false },
-      { name: 'buffer_size', label: 'Buffer Size (KB)', type: 'number', defaultValue: 64 },
-      { name: 'auto_scaling', label: 'Auto Scaling', type: 'boolean', defaultValue: true },
-      { name: 'filter_type', label: 'Signal Filter', type: 'dropdown', options: ['None', 'Low Pass', 'High Pass', 'Band Pass', 'Notch'], defaultValue: 'Low Pass' },
-      { name: 'alert_enabled', label: 'Enable Alerts', type: 'boolean', defaultValue: true },
-      { name: 'alert_email', label: 'Alert Email', type: 'text', defaultValue: '' },
-      { name: 'logging_level', label: 'Logging Level', type: 'radio', options: ['Debug', 'Info', 'Warning', 'Error'], defaultValue: 'Info' }
+      { name: 'calibration_mode', label: 'Calibration Mode', type: 'radio', options: ['Auto', 'Manual', 'Factory'], defaultValue: 'Auto' }
     ]
   },
   {
@@ -74,7 +60,7 @@ const messageTypes: MessageType[] = [
     ]
   },
   {
-    id: 'power',
+    id: 'power_management',
     name: 'Power Management',
     description: 'Configure power saving and battery settings',
     fields: [
@@ -131,32 +117,11 @@ const IoTDashboard: React.FC = () => {
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
     
-    // Simulate various response scenarios with more detailed responses
+    // Simulate various response scenarios
     const scenarios = [
-      { 
-        type: 'success', 
-        message: 'Configuration applied successfully to all sensor modules', 
-        details: 'All parameters have been validated and deployed to the target device. The new configuration will take effect immediately and sensor readings will be available within 30 seconds. System health checks passed successfully.',
-        probability: 0.6 
-      },
-      { 
-        type: 'error', 
-        message: 'Failed to apply configuration due to validation errors', 
-        details: 'The following issues were detected: Invalid sensor type compatibility with current firmware version 2.1.3. Please ensure that the selected sensor type is supported by your device model IoT-SENS-PRO-V2. Check the device manual section 4.2 for compatible sensor configurations.',
-        probability: 0.25 
-      },
-      { 
-        type: 'info', 
-        message: 'Configuration queued for processing during next maintenance window', 
-        details: 'The device is currently performing critical operations and cannot accept new configurations. Your request has been queued and will be automatically processed during the next scheduled maintenance window at 02:00 UTC. You will receive a confirmation notification once the configuration is applied.',
-        probability: 0.1 
-      },
-      { 
-        type: 'warning', 
-        message: 'Configuration applied with non-critical warnings', 
-        details: 'The configuration was successfully applied, however some non-critical warnings were detected: Sample rate of 10Hz may cause increased power consumption and reduce battery life by approximately 15%. Consider lowering the sample rate for battery-powered deployments.',
-        probability: 0.05 
-      }
+      { type: 'success', message: 'Configuration applied successfully', probability: 0.7 },
+      { type: 'error', message: 'Failed to apply configuration', details: 'Invalid sensor type for current firmware', probability: 0.2 },
+      { type: 'info', message: 'Configuration queued for processing', details: 'Device is currently busy, will apply when available', probability: 0.1 }
     ];
 
     const random = Math.random();
@@ -166,7 +131,7 @@ const IoTDashboard: React.FC = () => {
       cumulative += scenario.probability;
       if (random <= cumulative) {
         return {
-          type: scenario.type as 'success' | 'error' | 'info' | 'warning',
+          type: scenario.type as 'success' | 'error' | 'info',
           message: scenario.message,
           details: scenario.details
         };
@@ -212,22 +177,17 @@ const IoTDashboard: React.FC = () => {
       const feedbackMessage: FeedbackMessage = {
         id: Date.now().toString(),
         timestamp: new Date(),
-        type: response.type as 'success' | 'error' | 'info' | 'warning',
+        type: response.type as 'success' | 'error' | 'info',
         message: response.message,
-        details: response.details,
-        configType: selectedMessageType,
-        configName: currentMessageType?.name
+        details: response.details
       };
 
       setFeedbackMessages(prev => [feedbackMessage, ...prev.slice(0, 9)]); // Keep last 10 messages
 
       toast({
         variant: response.type === 'error' ? 'destructive' : 'default',
-        title: response.type === 'success' ? 'Success' : response.type === 'error' ? 'Error' : response.type === 'warning' ? 'Warning' : 'Info',
-        description: response.message,
-        className: response.type === 'success' ? 'border-success bg-success text-white' : 
-                   response.type === 'info' ? 'border-info bg-info text-white' :
-                   response.type === 'warning' ? 'border-warning bg-warning text-white' : ''
+        title: response.type === 'success' ? 'Success' : response.type === 'error' ? 'Error' : 'Info',
+        description: response.message
       });
 
     } catch (error) {
@@ -236,9 +196,7 @@ const IoTDashboard: React.FC = () => {
         timestamp: new Date(),
         type: 'error',
         message: 'Communication failed',
-        details: 'Unable to reach IoT device',
-        configType: selectedMessageType,
-        configName: currentMessageType?.name
+        details: 'Unable to reach IoT device'
       };
 
       setFeedbackMessages(prev => [errorMessage, ...prev.slice(0, 9)]);
@@ -316,97 +274,137 @@ const IoTDashboard: React.FC = () => {
     }
   };
 
+  const getFeedbackIcon = (type: 'success' | 'error' | 'info') => {
+    switch (type) {
+      case 'success': return <CheckCircle className="w-4 h-4 text-success" />;
+      case 'error': return <XCircle className="w-4 h-4 text-destructive" />;
+      case 'info': return <Clock className="w-4 h-4 text-info" />;
+    }
+  };
+
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar 
-          messageTypes={messageTypes}
-          selectedMessageType={selectedMessageType}
-          onMessageTypeSelect={setSelectedMessageType}
-          connectionStatus={isConnected}
-        />
-        
-        <div className="flex-1 flex flex-col">
-          {/* Header */}
-          <header className="h-16 border-b border-border bg-gradient-to-r from-background to-card/50 backdrop-blur-sm">
-            <div className="flex items-center justify-between h-full px-6">
-              <div className="flex items-center gap-3">
-                <div>
-                  <h1 className="text-xl font-bold text-foreground">IoT Device Configuration</h1>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Settings className="w-6 h-6 text-primary" />
-              </div>
+    <div className="min-h-screen bg-background p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Settings className="w-8 h-8 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">IoT Device Configuration</h1>
+              <p className="text-muted-foreground">Configure and manage your IoT device settings</p>
             </div>
-          </header>
-
-          <div className="flex-1 flex">
-            {/* Main Configuration Area */}
-            <main className="flex-1 p-6 overflow-auto">
-              <div className="max-w-2xl mx-auto">
-                {currentMessageType ? (
-                  <Card className="shadow-card">
-                    <CardHeader className="pb-6">
-                      <CardTitle className="text-2xl text-center">
-                        {currentMessageType.name}
-                      </CardTitle>
-                      <p className="text-muted-foreground text-center">
-                        {currentMessageType.description}
-                      </p>
-                    </CardHeader>
-                    <CardContent className="space-y-6 max-h-[calc(100vh-16rem)] overflow-y-auto">
-                      {currentMessageType.fields.map(field => (
-                        <div key={field.name} className="space-y-3">
-                          <Label className="text-sm font-semibold text-foreground">
-                            {field.label}
-                            {field.required && <span className="text-destructive ml-1">*</span>}
-                          </Label>
-                          <div className="bg-card/50 p-3 rounded-md border border-border">
-                            {renderField(field)}
-                          </div>
-                        </div>
-                      ))}
-                      
-                      <Separator className="my-8" />
-                      
-                      <div className="flex justify-center pb-6">
-                        <Button 
-                          onClick={handleSendMessage}
-                          className="px-8 py-3 text-base font-medium shadow-glow"
-                          disabled={!isConnected}
-                          size="lg"
-                        >
-                          <Send className="w-5 h-5 mr-2" />
-                          Send Configuration
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <Card className="shadow-card">
-                    <CardContent className="py-16">
-                      <div className="text-center space-y-4">
-                        <Settings className="w-16 h-16 text-muted-foreground mx-auto opacity-50" />
-                        <h3 className="text-xl font-semibold text-foreground">
-                          Select Configuration Type
-                        </h3>
-                        <p className="text-muted-foreground max-w-md mx-auto">
-                          Choose a configuration type from the sidebar to start configuring your IoT device settings.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            </main>
-
-            {/* Device Feedback Panel */}
-            <DeviceFeedbackPanel feedbackMessages={feedbackMessages} />
+          </div>
+          <div className="flex items-center gap-2">
+            <Activity className={`w-5 h-5 ${isConnected ? 'text-success' : 'text-destructive'}`} />
+            <Badge variant={isConnected ? 'default' : 'destructive'}>
+              {isConnected ? 'Connected' : 'Disconnected'}
+            </Badge>
           </div>
         </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Message Type Selection */}
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <CardTitle>Message Types</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {messageTypes.map(messageType => (
+                <Button
+                  key={messageType.id}
+                  variant={selectedMessageType === messageType.id ? 'default' : 'outline'}
+                  className="w-full justify-start text-left h-auto p-4"
+                  onClick={() => setSelectedMessageType(messageType.id)}
+                >
+                  <div>
+                    <div className="font-medium">{messageType.name}</div>
+                    <div className="text-sm text-muted-foreground mt-1">
+                      {messageType.description}
+                    </div>
+                  </div>
+                </Button>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Configuration Form */}
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <CardTitle>
+                {currentMessageType ? currentMessageType.name : 'Select Message Type'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {currentMessageType ? (
+                <>
+                  {currentMessageType.fields.map(field => (
+                    <div key={field.name} className="space-y-2">
+                      <Label className="text-sm font-medium">
+                        {field.label}
+                        {field.required && <span className="text-destructive ml-1">*</span>}
+                      </Label>
+                      {renderField(field)}
+                    </div>
+                  ))}
+                  
+                  <Separator className="my-6" />
+                  
+                  <Button 
+                    onClick={handleSendMessage}
+                    className="w-full"
+                    disabled={!isConnected}
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    Send Configuration
+                  </Button>
+                </>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  Please select a message type to configure
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Feedback Display */}
+          <Card className="lg:col-span-1">
+            <CardHeader>
+              <CardTitle>Device Feedback</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ScrollArea className="h-96">
+                {feedbackMessages.length > 0 ? (
+                  <div className="space-y-3">
+                    {feedbackMessages.map(feedback => (
+                      <div key={feedback.id} className="p-3 border rounded-lg">
+                        <div className="flex items-start gap-3">
+                          {getFeedbackIcon(feedback.type)}
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium">{feedback.message}</div>
+                            {feedback.details && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {feedback.details}
+                              </div>
+                            )}
+                            <div className="text-xs text-muted-foreground mt-2">
+                              {feedback.timestamp.toLocaleTimeString()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No feedback messages yet. Send a configuration to see device responses.
+                  </div>
+                )}
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 
