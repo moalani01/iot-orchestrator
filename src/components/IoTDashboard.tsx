@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Settings, Send, Activity, CheckCircle, XCircle, Clock } from 'lucide-react';
 
 interface MessageField {
@@ -294,11 +295,14 @@ const IoTDashboard: React.FC = () => {
               <p className="text-muted-foreground">Configure and manage your IoT device settings</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Activity className={`w-5 h-5 ${isConnected ? 'text-success' : 'text-destructive'}`} />
-            <Badge variant={isConnected ? 'default' : 'destructive'}>
-              {isConnected ? 'Connected' : 'Disconnected'}
-            </Badge>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Activity className={`w-5 h-5 ${isConnected ? 'text-success' : 'text-destructive'}`} />
+              <Badge variant={isConnected ? 'default' : 'destructive'}>
+                {isConnected ? 'Connected' : 'Disconnected'}
+              </Badge>
+            </div>
+            <ThemeToggle />
           </div>
         </div>
 
