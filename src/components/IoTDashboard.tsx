@@ -329,7 +329,7 @@ const IoTDashboard: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Message Type Selection */}
-          <Card className="lg:col-span-1 h-[600px] flex flex-col">
+          <Card className="lg:col-span-1 h-[600px] flex flex-col overflow-hidden">
             <CardHeader>
               <CardTitle>Message Types</CardTitle>
             </CardHeader>
@@ -340,12 +340,12 @@ const IoTDashboard: React.FC = () => {
                     <Button
                       key={messageType.id}
                       variant={selectedMessageType === messageType.id ? 'default' : 'outline'}
-                      className="w-full justify-start text-left h-auto p-4"
+                      className="w-full justify-start text-left h-auto p-4 overflow-hidden"
                       onClick={() => setSelectedMessageType(messageType.id)}
                     >
-                      <div className="min-w-0 w-full">
-                        <div className="font-medium truncate">{messageType.name}</div>
-                        <div className="text-sm text-muted-foreground mt-1 break-words">
+                      <div className="min-w-0 w-full overflow-hidden">
+                        <div className="font-medium truncate w-full">{messageType.name}</div>
+                        <div className="text-sm text-muted-foreground mt-1 line-clamp-2 overflow-hidden text-ellipsis">
                           {messageType.description}
                         </div>
                       </div>
@@ -357,7 +357,7 @@ const IoTDashboard: React.FC = () => {
           </Card>
 
           {/* Configuration Form */}
-          <Card className="lg:col-span-1 h-[600px] flex flex-col">
+          <Card className="lg:col-span-1 h-[600px] flex flex-col overflow-hidden">
             <CardHeader>
               <CardTitle>
                 {currentMessageType ? currentMessageType.name : 'Select Message Type'}
@@ -415,7 +415,7 @@ const IoTDashboard: React.FC = () => {
           </Card>
 
           {/* Feedback Display */}
-          <Card className="lg:col-span-1 h-[600px] flex flex-col">
+          <Card className="lg:col-span-1 h-[600px] flex flex-col overflow-hidden">
             <CardHeader>
               <CardTitle>Device Feedback</CardTitle>
             </CardHeader>
