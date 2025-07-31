@@ -307,11 +307,13 @@ const IoTDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Settings className="w-8 h-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">IoT Device Configuration</h1>
-              <p className="text-muted-foreground">Configure and manage your IoT device settings</p>
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex-shrink-0">
+              <Settings className="w-8 h-8 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-3xl font-bold text-foreground break-words">IoT Device Configuration</h1>
+              <p className="text-muted-foreground break-words">Configure and manage your IoT device settings</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -341,9 +343,9 @@ const IoTDashboard: React.FC = () => {
                       className="w-full justify-start text-left h-auto p-4"
                       onClick={() => setSelectedMessageType(messageType.id)}
                     >
-                      <div>
-                        <div className="font-medium">{messageType.name}</div>
-                        <div className="text-sm text-muted-foreground mt-1">
+                      <div className="min-w-0 w-full">
+                        <div className="font-medium truncate">{messageType.name}</div>
+                        <div className="text-sm text-muted-foreground mt-1 break-words">
                           {messageType.description}
                         </div>
                       </div>
@@ -370,18 +372,22 @@ const IoTDashboard: React.FC = () => {
                       <div className="space-y-4 pr-4 pl-1">
                         {currentMessageType.fields.map(field => (
                           <div key={field.name} className="space-y-2">
-                            <div className="flex items-center justify-between">
-                              <Label className="text-sm font-medium">
-                                {field.label}
+                            <div className="flex items-center justify-between min-w-0">
+                              <Label className="text-sm font-medium truncate flex-1 min-w-0">
+                                <span className="break-words">{field.label}</span>
                                 {field.required && <span className="text-destructive ml-1">*</span>}
                               </Label>
                               {field.type === 'boolean' && (
-                                <div className="ml-4">
+                                <div className="ml-4 flex-shrink-0">
                                   {renderField(field)}
                                 </div>
                               )}
                             </div>
-                            {field.type !== 'boolean' && renderField(field)}
+                            {field.type !== 'boolean' && (
+                              <div className="min-w-0">
+                                {renderField(field)}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -419,12 +425,14 @@ const IoTDashboard: React.FC = () => {
                   <div className="space-y-3 pr-4">
                     {feedbackMessages.map(feedback => (
                       <div key={feedback.id} className="p-3 border rounded-lg">
-                        <div className="flex items-start gap-3">
-                          {getFeedbackIcon(feedback.type)}
+                        <div className="flex items-start gap-3 min-w-0">
+                          <div className="flex-shrink-0">
+                            {getFeedbackIcon(feedback.type)}
+                          </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium">{feedback.message}</div>
+                            <div className="text-sm font-medium break-words">{feedback.message}</div>
                             {feedback.details && (
-                              <div className="text-xs text-muted-foreground mt-1">
+                              <div className="text-xs text-muted-foreground mt-1 break-words">
                                 {feedback.details}
                               </div>
                             )}
