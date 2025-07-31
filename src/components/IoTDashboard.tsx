@@ -367,7 +367,7 @@ const IoTDashboard: React.FC = () => {
                   {/* Scrollable Fields */}
                   <div className="flex-1 min-h-0">
                     <ScrollArea className="h-full">
-                      <div className="space-y-4 pr-4">
+                      <div className="space-y-4 pr-4 pl-1">
                         {currentMessageType.fields.map(field => (
                           <div key={field.name} className="space-y-2">
                             <div className="flex items-center justify-between">
