@@ -107,23 +107,8 @@ const MessageTypeCard: React.FC<MessageTypeCardProps> = ({
   onSelect, 
   onToggleExpand 
 }) => {
-  const descriptionRef = useRef<HTMLDivElement>(null);
-  const [isOverflowing, setIsOverflowing] = useState(false);
-
-  useEffect(() => {
-    const checkOverflow = () => {
-      if (descriptionRef.current && !isExpanded) {
-        const element = descriptionRef.current;
-        setIsOverflowing(element.scrollHeight > element.clientHeight);
-      } else {
-        setIsOverflowing(false);
-      }
-    };
-
-    checkOverflow();
-    window.addEventListener('resize', checkOverflow);
-    return () => window.removeEventListener('resize', checkOverflow);
-  }, [isExpanded, messageType.description]);
+  // Simple check for long descriptions
+  const isLongDescription = messageType.description.length > 60;
 
   return (
     <div className="space-y-2">
@@ -134,17 +119,14 @@ const MessageTypeCard: React.FC<MessageTypeCardProps> = ({
       >
         <div className="min-w-0 w-full overflow-hidden">
           <div className="font-medium truncate w-full">{messageType.name}</div>
-          <div 
-            ref={descriptionRef}
-            className={`text-sm text-muted-foreground mt-1 ${
-              isExpanded ? 'break-words' : 'line-clamp-2 overflow-hidden'
-            }`}
-          >
+          <div className={`text-sm text-muted-foreground mt-1 ${
+            isExpanded ? 'break-words' : 'truncate'
+          }`}>
             {messageType.description}
           </div>
         </div>
       </Button>
-      {isOverflowing && (
+      {isLongDescription && (
         <Button
           variant="ghost"
           size="sm"
