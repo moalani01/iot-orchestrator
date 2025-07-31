@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageType } from '@/types/iot';
 import { MessageTypeCard } from './MessageTypeCard';
-import { useExpandableText } from '@/hooks/useExpandableText';
+import { useExpandable } from '@/hooks/useExpandable';
 
 interface MessageTypeListProps {
   messageTypes: MessageType[];
@@ -16,7 +16,7 @@ export const MessageTypeList: React.FC<MessageTypeListProps> = ({
   selectedMessageType,
   onSelectMessageType
 }) => {
-  const { isExpanded, toggleExpansion } = useExpandableText();
+  const { isExpanded, toggleExpansion } = useExpandable();
 
   return (
     <Card className="lg:col-span-1 h-[600px] flex flex-col overflow-hidden">

@@ -1,101 +1,61 @@
-import React, { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState, useCallback } from 'react';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useConnectionStatus } from '@/hooks/useConnectionStatus';
+import { useFeedback } from '@/hooks/useFeedback';
+import { useMessageSender } from '@/hooks/useMessageSender';
 import { MESSAGE_TYPES } from '@/constants/messageTypes';
 import { FeedbackMessage } from '@/types/iot';
-import { simulateZmqCommunication, createMessagePayload } from '@/utils/messageSimulation';
+import { createFeedbackMessage } from '@/utils/feedbackHelpers';
+import { CONFIG } from '@/config/constants';
+
 import { DashboardHeader } from './DashboardHeader';
 import { MessageTypeList } from './MessageTypeList';
 import { ConfigurationForm } from './ConfigurationForm';
 import { FeedbackDisplay } from './FeedbackDisplay';
 
 const IoTDashboard: React.FC = () => {
+  // State Management
   const [selectedMessageType, setSelectedMessageType] = useState<string>('');
-  const [formData, setFormData] = useLocalStorage<Record<string, any>>('iot-config-data', {});
-  const [feedbackMessages, setFeedbackMessages] = useState<FeedbackMessage[]>([]);
-  const isConnected = useConnectionStatus();
-  const { toast } = useToast();
+  const [formData, setFormData] = useLocalStorage<Record<string, any>>(
+    CONFIG.STORAGE_KEYS.IOT_CONFIG_DATA, 
+    {}
+  );
 
+  // Custom Hooks
+  const isConnected = useConnectionStatus();
+  const { messages: feedbackMessages, addMessage: addFeedbackMessage } = useFeedback();
+
+  // Derived State
   const currentMessageType = MESSAGE_TYPES.find(mt => mt.id === selectedMessageType);
 
-  const handleFieldChange = (fieldName: string, value: any) => {
+  // Event Handlers
+  const handleFieldChange = useCallback((fieldName: string, value: any) => {
     setFormData(prev => ({
       ...prev,
       [fieldName]: value
     }));
-  };
+  }, [setFormData]);
 
-  const validateRequiredFields = (): string[] => {
-    if (!currentMessageType) return [];
-    
-    const requiredFields = currentMessageType.fields.filter(field => field.required);
-    return requiredFields
-      .filter(field => !formData[field.name])
-      .map(field => field.label);
-  };
+  const handleSuccessResponse = useCallback((response: any) => {
+    const feedbackMessage = createFeedbackMessage(
+      response.type,
+      response.message,
+      response.details
+    );
+    addFeedbackMessage(feedbackMessage);
+  }, [addFeedbackMessage]);
 
-  const addFeedbackMessage = (message: FeedbackMessage) => {
-    setFeedbackMessages(prev => [message, ...prev.slice(0, 9)]);
-  };
+  const handleErrorResponse = useCallback((errorMessage: FeedbackMessage) => {
+    addFeedbackMessage(errorMessage);
+  }, [addFeedbackMessage]);
 
-  const handleSendMessage = async () => {
+  // Message Sender Hook
+  const { sendMessage } = useMessageSender(handleSuccessResponse, handleErrorResponse);
+
+  const handleSendMessage = useCallback(async () => {
     if (!currentMessageType) return;
-
-    const missingFields = validateRequiredFields();
-    if (missingFields.length > 0) {
-      toast({
-        variant: "destructive",
-        title: "Missing Required Fields",
-        description: `Please fill in: ${missingFields.join(', ')}`
-      });
-      return;
-    }
-
-    const payload = createMessagePayload(selectedMessageType, formData, currentMessageType);
-
-    toast({
-      title: "Sending Configuration",
-      description: "Processing your request...",
-    });
-
-    try {
-      const response = await simulateZmqCommunication(payload);
-      
-      const feedbackMessage: FeedbackMessage = {
-        id: Date.now().toString(),
-        timestamp: new Date(),
-        type: response.type,
-        message: response.message,
-        details: response.details
-      };
-
-      addFeedbackMessage(feedbackMessage);
-
-      toast({
-        variant: response.type === 'error' ? 'destructive' : response.type === 'success' ? 'success' : 'info',
-        title: response.type === 'success' ? 'Success' : response.type === 'error' ? 'Error' : 'Info',
-        description: response.message
-      });
-
-    } catch (error) {
-      const errorMessage: FeedbackMessage = {
-        id: Date.now().toString(),
-        timestamp: new Date(),
-        type: 'error',
-        message: 'Communication failed',
-        details: 'Unable to reach IoT device'
-      };
-
-      addFeedbackMessage(errorMessage);
-      
-      toast({
-        variant: "destructive",
-        title: "Communication Error",
-        description: "Failed to send configuration to device"
-      });
-    }
-  };
+    await sendMessage(currentMessageType, formData);
+  }, [currentMessageType, formData, sendMessage]);
 
   return (
     <div className="min-h-screen bg-background p-6">

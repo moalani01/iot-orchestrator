@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageType } from '@/types/iot';
-import { shouldTruncateText, getTruncatedText } from '@/hooks/useExpandableText';
+import { useTextUtils } from '@/hooks/useTextUtils';
 
 interface MessageTypeCardProps {
   messageType: MessageType;
@@ -18,7 +18,10 @@ export const MessageTypeCard: React.FC<MessageTypeCardProps> = ({
   onSelect, 
   onToggleExpand 
 }) => {
-  const hasLongDescription = shouldTruncateText(messageType.description);
+  const { shouldTruncate, getDisplayText } = useTextUtils();
+  
+  const hasLongDescription = shouldTruncate(messageType.description);
+  const displayText = getDisplayText(messageType.description, isExpanded);
 
   return (
     <div className="space-y-2">
@@ -28,17 +31,17 @@ export const MessageTypeCard: React.FC<MessageTypeCardProps> = ({
         onClick={onSelect}
       >
         <div className="min-w-0 w-full overflow-hidden">
-          <div className="font-medium truncate w-full">{messageType.name}</div>
+          <div className="font-medium truncate w-full">
+            {messageType.name}
+          </div>
           <div className={`text-sm text-muted-foreground mt-1 ${
             isExpanded ? 'break-words' : 'truncate'
           }`}>
-            {isExpanded || !hasLongDescription 
-              ? messageType.description 
-              : getTruncatedText(messageType.description)
-            }
+            {displayText}
           </div>
         </div>
       </Button>
+      
       {hasLongDescription && (
         <Button
           variant="ghost"
