@@ -370,11 +370,18 @@ const IoTDashboard: React.FC = () => {
                       <div className="space-y-4 pr-4">
                         {currentMessageType.fields.map(field => (
                           <div key={field.name} className="space-y-2">
-                            <Label className="text-sm font-medium">
-                              {field.label}
-                              {field.required && <span className="text-destructive ml-1">*</span>}
-                            </Label>
-                            {renderField(field)}
+                            <div className="flex items-center justify-between">
+                              <Label className="text-sm font-medium">
+                                {field.label}
+                                {field.required && <span className="text-destructive ml-1">*</span>}
+                              </Label>
+                              {field.type === 'boolean' && (
+                                <div className="ml-4">
+                                  {renderField(field)}
+                                </div>
+                              )}
+                            </div>
+                            {field.type !== 'boolean' && renderField(field)}
                           </div>
                         ))}
                       </div>
