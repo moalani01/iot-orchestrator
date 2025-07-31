@@ -308,62 +308,74 @@ const IoTDashboard: React.FC = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Message Type Selection */}
-          <Card className="lg:col-span-1">
+          <Card className="lg:col-span-1 h-[600px] flex flex-col">
             <CardHeader>
               <CardTitle>Message Types</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {messageTypes.map(messageType => (
-                <Button
-                  key={messageType.id}
-                  variant={selectedMessageType === messageType.id ? 'default' : 'outline'}
-                  className="w-full justify-start text-left h-auto p-4"
-                  onClick={() => setSelectedMessageType(messageType.id)}
-                >
-                  <div>
-                    <div className="font-medium">{messageType.name}</div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {messageType.description}
-                    </div>
-                  </div>
-                </Button>
-              ))}
+            <CardContent className="flex-1 overflow-hidden">
+              <ScrollArea className="h-full">
+                <div className="space-y-3 pr-4">
+                  {messageTypes.map(messageType => (
+                    <Button
+                      key={messageType.id}
+                      variant={selectedMessageType === messageType.id ? 'default' : 'outline'}
+                      className="w-full justify-start text-left h-auto p-4"
+                      onClick={() => setSelectedMessageType(messageType.id)}
+                    >
+                      <div>
+                        <div className="font-medium">{messageType.name}</div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {messageType.description}
+                        </div>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </ScrollArea>
             </CardContent>
           </Card>
 
           {/* Configuration Form */}
-          <Card className="lg:col-span-1">
+          <Card className="lg:col-span-1 h-[600px] flex flex-col">
             <CardHeader>
               <CardTitle>
                 {currentMessageType ? currentMessageType.name : 'Select Message Type'}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="flex-1 flex flex-col">
               {currentMessageType ? (
                 <>
-                  {currentMessageType.fields.map(field => (
-                    <div key={field.name} className="space-y-2">
-                      <Label className="text-sm font-medium">
-                        {field.label}
-                        {field.required && <span className="text-destructive ml-1">*</span>}
-                      </Label>
-                      {renderField(field)}
-                    </div>
-                  ))}
+                  {/* Scrollable Fields */}
+                  <div className="flex-1 overflow-hidden">
+                    <ScrollArea className="h-full">
+                      <div className="space-y-4 pr-4">
+                        {currentMessageType.fields.map(field => (
+                          <div key={field.name} className="space-y-2">
+                            <Label className="text-sm font-medium">
+                              {field.label}
+                              {field.required && <span className="text-destructive ml-1">*</span>}
+                            </Label>
+                            {renderField(field)}
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </div>
                   
-                  <Separator className="my-6" />
-                  
-                  <Button 
-                    onClick={handleSendMessage}
-                    className="w-full"
-                    disabled={!isConnected}
-                  >
-                    <Send className="w-4 h-4 mr-2" />
-                    Send Configuration
-                  </Button>
+                  {/* Fixed Send Button */}
+                  <div className="pt-4 border-t mt-4">
+                    <Button 
+                      onClick={handleSendMessage}
+                      className="w-full"
+                      disabled={!isConnected}
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      Send Configuration
+                    </Button>
+                  </div>
                 </>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
+                <div className="flex-1 flex items-center justify-center text-muted-foreground">
                   Please select a message type to configure
                 </div>
               )}
@@ -371,14 +383,14 @@ const IoTDashboard: React.FC = () => {
           </Card>
 
           {/* Feedback Display */}
-          <Card className="lg:col-span-1">
+          <Card className="lg:col-span-1 h-[600px] flex flex-col">
             <CardHeader>
               <CardTitle>Device Feedback</CardTitle>
             </CardHeader>
-            <CardContent>
-              <ScrollArea className="h-96">
+            <CardContent className="flex-1 overflow-hidden">
+              <ScrollArea className="h-full">
                 {feedbackMessages.length > 0 ? (
-                  <div className="space-y-3">
+                  <div className="space-y-3 pr-4">
                     {feedbackMessages.map(feedback => (
                       <div key={feedback.id} className="p-3 border rounded-lg">
                         <div className="flex items-start gap-3">
@@ -399,7 +411,7 @@ const IoTDashboard: React.FC = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">
+                  <div className="flex-1 flex items-center justify-center text-muted-foreground">
                     No feedback messages yet. Send a configuration to see device responses.
                   </div>
                 )}
